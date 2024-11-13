@@ -1,0 +1,7 @@
+# group_vars/target.yml
+
+package_list:
+  - wget
+  - python3
+  - python3-pip
+

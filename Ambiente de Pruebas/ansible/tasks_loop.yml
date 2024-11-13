@@ -1,0 +1,9 @@
+- name: Mostrar el nombre del paquete antes de instalarlo
+  debug:
+    msg: "Instalando el paquete: {{ item }}"
+
+- name: Instalar el paquete
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes

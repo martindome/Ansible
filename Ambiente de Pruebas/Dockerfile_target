@@ -1,0 +1,15 @@
+# Dockerfile para el contenedor objetivo
+FROM ubuntu:latest
+
+# Instala SSH server
+RUN apt-get update && \
+    apt-get install -y openssh-server net-tools && \
+    mkdir /var/run/sshd && \
+    apt-get clean
+
+# Configura usuario y contraseña para el SSH
+RUN echo "root:password" | chpasswd
+
+# Permite el acceso SSH sin contraseña
+RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
+    echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
