@@ -1,6 +1,6 @@
 ---
 - name: Test connectivity and basic setup on target
-  hosts: target
+  hosts: all
   gather_facts: yes
   tasks:
     - name: Check if we can connect to the target

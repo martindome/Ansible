@@ -1,0 +1,54 @@
+Mira estos archivos que me has dado. Dockerfile: ''# Dockerfile para el contenedor de Ansible
+FROM ubuntu:latest
+
+# Instala Ansible y las dependencias necesarias
+RUN apt-get update && \
+    apt-get install -y ansible openssh-client sshpass net-tools && \
+    apt-get clean
+
+# Genera una clave SSH para conectarse al otro contenedor
+RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
+
+# Permite el acceso SSH sin contraseña
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config" Dockerfiletarget: "# Dockerfile para el contenedor objetivo
+FROM ubuntu:latest
+
+# Instala SSH server
+RUN apt-get update && \
+    apt-get install -y openssh-server net-tools && \
+    mkdir /var/run/sshd && \
+    apt-get clean
+
+# Configura usuario y contraseña para el SSH
+RUN echo "root:password" | chpasswd
+
+# Permite el acceso SSH sin contraseña
+RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
+    echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config" docker_compose: "version: '3'
+
+services:
+  ansible:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ansible_controller
+    volumes:
+      - ./ansible:/ansible  # Directorio local donde puedes guardar tus playbooks
+    networks:
+      - ansible_net
+    command: tail -f /dev/null  # Mantiene el contenedor en ejecución
+    depends_on:
+      - target
+
+  target:
+    build:
+      context: .
+      dockerfile: Dockerfile_target
+    container_name: ansible_target
+    networks:
+      - ansible_net
+    command: /usr/sbin/sshd -D  # Inicia el servicio SSH
+
+networks:
+  ansible_net:
+    driver: bridge"

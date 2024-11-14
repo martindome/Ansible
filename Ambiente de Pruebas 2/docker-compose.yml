@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  ansible:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ansible_controller
+    volumes:
+      - ./ansible:/ansible  # Directorio local donde puedes guardar tus playbooks
+    networks:
+      - ansible_net
+    command: tail -f /dev/null  # Mantiene el contenedor en ejecución
+    depends_on:
+      - target1
+      - target2
+
+  target1:
+    build:
+      context: .
+      dockerfile: Dockerfile_target
+    container_name: ansible_target1
+    networks:
+      - ansible_net
+    command: /usr/sbin/sshd -D  # Inicia el servicio SSH
+
+  target2:
+    build:
+      context: .
+      dockerfile: Dockerfile_target
+    container_name: ansible_target2
+    networks:
+      - ansible_net
+    command: /usr/sbin/sshd -D  # Inicia el servicio SSH
+
+networks:
+  ansible_net:
+    driver: bridge
