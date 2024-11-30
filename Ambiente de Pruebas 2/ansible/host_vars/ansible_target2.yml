@@ -1,0 +1,4 @@
+package_list:
+  - git
+  - nmap
+  - tree
