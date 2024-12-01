@@ -1,6 +1,6 @@
 ---
 - name: Test connectivity and basic setup on target
-  hosts: all
+  hosts: target_machines
   gather_facts: yes
   tasks:
     - name: Check if we can connect to the target
@@ -21,3 +21,7 @@
     - name: Incluir tareas de instalación para cada paquete
       include_tasks: tasks_loop.yml
       loop: "{{ package_list }}"
+
+    - name: Mostrar los ansible facts
+      debug:
+        var: ansible_facts
